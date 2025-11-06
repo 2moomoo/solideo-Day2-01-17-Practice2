@@ -1,12 +1,21 @@
 // Client-side API service - no backend required
+// Uses enhanced search with Google APIs, TSP, time validation, and caching
 
 import { TravelRequest, SearchResult } from '../types';
-import { ClientRouteSearchService } from './routeSearchService';
+import { EnhancedRouteSearchService } from './enhancedRouteSearch';
 
-const searchService = new ClientRouteSearchService();
+const searchService = new EnhancedRouteSearchService();
 
 /**
- * 경로 검색 (클라이언트 사이드)
+ * 경로 검색 (고도화된 클라이언트 사이드 검색)
+ *
+ * Features:
+ * - Google Maps API integration (fallback to OpenStreetMap)
+ * - TSP optimization for multi-city routes
+ * - Time validation for transport connections
+ * - API result caching (1 hour)
+ * - Smart weight adjustment
+ * - Parallel API calls
  */
 export const searchRoutes = async (
   request: TravelRequest,
