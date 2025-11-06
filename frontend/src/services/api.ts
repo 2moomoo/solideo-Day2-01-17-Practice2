@@ -1,30 +1,23 @@
+// Client-side API service - no backend required
+
 import { TravelRequest, SearchResult } from '../types';
+import { ClientRouteSearchService } from './routeSearchService';
 
-const API_BASE_URL = '/api';
+const searchService = new ClientRouteSearchService();
 
-export const searchRoutes = async (request: TravelRequest): Promise<SearchResult> => {
-  const response = await fetch(`${API_BASE_URL}/search`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify(request),
-  });
-
-  if (!response.ok) {
-    const error = await response.json();
-    throw new Error(error.error || 'Search failed');
-  }
-
-  const result = await response.json();
-  return result.data;
+/**
+ * 경로 검색 (클라이언트 사이드)
+ */
+export const searchRoutes = async (
+  request: TravelRequest,
+  onProgress?: (message: string) => void
+): Promise<SearchResult> => {
+  return await searchService.search(request, onProgress);
 };
 
+/**
+ * Health check (항상 true, 클라이언트 사이드이므로)
+ */
 export const checkHealth = async (): Promise<boolean> => {
-  try {
-    const response = await fetch(`${API_BASE_URL}/health`);
-    return response.ok;
-  } catch {
-    return false;
-  }
+  return true;
 };

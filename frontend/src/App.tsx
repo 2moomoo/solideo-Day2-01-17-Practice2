@@ -10,16 +10,22 @@ function App() {
   const [selectedRouteId, setSelectedRouteId] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [progressMessages, setProgressMessages] = useState<string[]>([]);
 
   const handleSearch = async (request: TravelRequest) => {
     setIsLoading(true);
     setError(null);
     setSearchResult(null);
     setSelectedRouteId(null);
+    setProgressMessages([]);
 
     try {
       console.log('Searching with request:', request);
-      const result = await searchRoutes(request);
+
+      const result = await searchRoutes(request, (message: string) => {
+        setProgressMessages(prev => [...prev, message]);
+      });
+
       console.log('Search result:', result);
       setSearchResult(result);
 
@@ -74,14 +80,21 @@ function App() {
 
             {/* Loading Indicator */}
             {isLoading && (
-              <div className="mt-4 bg-blue-50 border border-blue-200 rounded-lg p-4">
-                <div className="flex items-center gap-3">
+              <div className="mt-4 bg-blue-50 border border-blue-200 rounded-lg p-4 max-h-96 overflow-y-auto">
+                <div className="flex items-center gap-3 mb-3">
                   <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-blue-600"></div>
                   <div className="text-sm text-blue-700">
                     <p className="font-semibold">경로 탐색 중...</p>
-                    <p className="text-xs">다단계 최적화를 수행하고 있습니다</p>
+                    <p className="text-xs">실시간 API로 최적 경로를 찾고 있습니다</p>
                   </div>
                 </div>
+                {progressMessages.length > 0 && (
+                  <div className="text-xs text-blue-600 space-y-1 font-mono">
+                    {progressMessages.map((msg, idx) => (
+                      <div key={idx}>{msg}</div>
+                    ))}
+                  </div>
+                )}
               </div>
             )}
           </div>
